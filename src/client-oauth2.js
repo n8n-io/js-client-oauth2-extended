@@ -201,13 +201,18 @@ function toString (str) {
  * Merge request options from an options object.
  */
 function requestOptions (requestOptions, options) {
-  return {
+  const roptions = {
     url: requestOptions.url,
     method: requestOptions.method,
     body: Object.assign({}, requestOptions.body, options.body),
     query: Object.assign({}, requestOptions.query, options.query),
     headers: Object.assign({}, requestOptions.headers, options.headers)
   }
+  // if request authorization was overriden delete it from header
+  if (roptions.headers.Authorization === '') {
+    delete roptions.headers.Authorization
+  }
+  return roptions
 }
 
 /**
