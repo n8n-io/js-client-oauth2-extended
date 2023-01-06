@@ -1,4 +1,6 @@
 .DS_Store
+.vscode
 coverage
 node_modules
-bower_components
+dist
+server.pid
