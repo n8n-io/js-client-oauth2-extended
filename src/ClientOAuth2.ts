@@ -5,19 +5,36 @@ import { ClientOAuth2Token } from './ClientOAuth2Token'
 import { CodeFlow } from './CodeFlow'
 import { CredentialsFlow } from './CredentialsFlow'
 
+export interface RequestOptions {
+	url: string
+	method: string
+	body?: Record<string, any>
+	query?: Record<string, string | string[]>
+	headers?: Record<string, string | string[]>
+}
+
+export interface ClientOAuth2Options {
+	clientId?: string
+	clientSecret?: string
+	accessTokenUri?: string
+	authorizationUri?: string
+	redirectUri?: string
+	scopes?: string[]
+	authorizationGrants?: string[]
+	state?: string
+	body?: Record<string, any>
+	query?: Record<string, string | string[]>
+}
+
 /**
  * Construct an object that can handle the multiple OAuth 2.0 flows.
  */
 export class ClientOAuth2 {
-	options: any
-
 	code: CodeFlow
 
 	credentials: CredentialsFlow
 
-	constructor(options: any) {
-		this.options = options
-
+	constructor(readonly options: ClientOAuth2Options) {
 		this.code = new CodeFlow(this)
 		this.credentials = new CredentialsFlow(this)
 	}
@@ -57,7 +74,7 @@ export class ClientOAuth2 {
 	 * Using the built-in request method, we'll automatically attempt to parse
 	 * the response.
 	 */
-	async request(options: any): Promise<any> {
+	async request(options: RequestOptions): Promise<any> {
 		let url = options.url
 		const query = qs.stringify(options.query)
 

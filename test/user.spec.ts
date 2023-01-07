@@ -12,7 +12,7 @@ describe('user', () => {
 		authorizationUri: config.authorizationUri,
 		authorizationGrants: ['code'],
 		redirectUri: config.redirectUri,
-		scopes: 'notifications',
+		scopes: ['notifications'],
 	})
 
 	const user = githubAuth.createToken(

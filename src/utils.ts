@@ -1,4 +1,5 @@
 import qs from 'querystring'
+import type { ClientOAuth2Options } from './ClientOAuth2'
 import { ERROR_RESPONSES } from './constants'
 
 /**
@@ -57,7 +58,10 @@ export function auth(username: string, password: string): string {
 /**
  * Create a request uri based on an options object and token type.
  */
-export function createUri(options: any, tokenType: string): string {
+export function createUri(
+	options: ClientOAuth2Options,
+	tokenType: string
+): string {
 	// Check the required parameters are set.
 	expects(options, 'clientId', 'authorizationUri')
 

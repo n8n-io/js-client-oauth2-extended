@@ -1,4 +1,4 @@
-import type { ClientOAuth2 } from './ClientOAuth2'
+import type { ClientOAuth2, ClientOAuth2Options } from './ClientOAuth2'
 import type { ClientOAuth2Token } from './ClientOAuth2Token'
 import { DEFAULT_HEADERS } from './constants'
 import { auth, expects, requestOptions, sanitizeScope } from './utils'
@@ -14,8 +14,8 @@ export class CredentialsFlow {
 	/**
 	 * Request an access token using the client credentials.
 	 */
-	async getToken(opts?: any): Promise<ClientOAuth2Token> {
-		const options: any = Object.assign({}, this.client.options, opts)
+	async getToken(opts?: ClientOAuth2Options): Promise<ClientOAuth2Token> {
+		const options = Object.assign({}, this.client.options, opts)
 
 		expects(options, 'clientId', 'clientSecret', 'accessTokenUri')
 

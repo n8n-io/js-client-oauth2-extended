@@ -14,7 +14,7 @@ describe('code', () => {
 		authorizationUri: config.authorizationUri,
 		authorizationGrants: ['code'],
 		redirectUri: config.redirectUri,
-		scopes: 'notifications',
+		scopes: ['notifications'],
 	})
 
 	describe('#getUri', () => {
@@ -66,7 +66,7 @@ describe('code', () => {
 				authorizationUri: config.authorizationUri,
 				authorizationGrants: ['code'],
 				redirectUri: config.redirectUri,
-				scopes: '',
+				scopes: [],
 			})
 			expect(authWithEmptyScopes.code.getUri()).to.equal(
 				`${config.authorizationUri}?client_id=abc&` +
@@ -83,7 +83,7 @@ describe('code', () => {
 					authorizationUri: `${config.authorizationUri}?bar=qux`,
 					authorizationGrants: ['code'],
 					redirectUri: config.redirectUri,
-					scopes: 'notifications',
+					scopes: ['notifications'],
 				})
 				expect(authWithParams.code.getUri()).to.equal(
 					`${config.authorizationUri}?bar=qux&client_id=abc&` +

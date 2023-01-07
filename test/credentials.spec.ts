@@ -60,7 +60,7 @@ describe('credentials', () => {
 					clientSecret: config.clientSecret,
 					accessTokenUri: config.accessTokenUri,
 					authorizationGrants: ['credentials'],
-					scopes: '',
+					scopes: [],
 				})
 				return authWithoutScopes.credentials.getToken().then((user) => {
 					expect(user).to.an.instanceOf(ClientOAuth2Token)

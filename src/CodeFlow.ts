@@ -1,5 +1,5 @@
 import * as qs from 'querystring'
-import type { ClientOAuth2 } from './ClientOAuth2'
+import type { ClientOAuth2, ClientOAuth2Options } from './ClientOAuth2'
 import type { ClientOAuth2Token } from './ClientOAuth2Token'
 import { DEFAULT_HEADERS, DEFAULT_URL_BASE } from './constants'
 import { auth, createUri, expects, getAuthError, requestOptions } from './utils'
@@ -15,7 +15,7 @@ export class CodeFlow {
 	/**
 	 * Generate the uri for doing the first redirect.
 	 */
-	getUri(opts?: any): string {
+	getUri(opts?: ClientOAuth2Options): string {
 		const options = Object.assign({}, this.client.options, opts)
 		return createUri(options, 'code')
 	}
@@ -24,8 +24,11 @@ export class CodeFlow {
 	 * Get the code token from the redirected uri and make another request for
 	 * the user access token.
 	 */
-	async getToken(uri?: string | URL, opts?: any): Promise<ClientOAuth2Token> {
-		const options: any = Object.assign({}, this.client.options, opts)
+	async getToken(
+		uri?: string | URL,
+		opts?: ClientOAuth2Options
+	): Promise<ClientOAuth2Token> {
+		const options = Object.assign({}, this.client.options, opts)
 
 		expects(options, 'clientId', 'accessTokenUri')
 

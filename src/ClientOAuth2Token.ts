@@ -1,4 +1,8 @@
-import type { ClientOAuth2 } from './ClientOAuth2'
+import type {
+	ClientOAuth2,
+	ClientOAuth2Options,
+	RequestOptions,
+} from './ClientOAuth2'
 import { auth, requestOptions } from './utils'
 import { DEFAULT_HEADERS } from './constants'
 
@@ -48,7 +52,7 @@ export class ClientOAuth2Token {
 	/**
 	 * Sign a standardized request object with user authentication information.
 	 */
-	sign(requestObject: any): any {
+	sign(requestObject: RequestOptions): RequestOptions {
 		if (!this.accessToken) {
 			throw new Error('Unable to sign without access token')
 		}
@@ -79,7 +83,7 @@ export class ClientOAuth2Token {
 	/**
 	 * Refresh a user access token with the supplied token.
 	 */
-	async refresh(opts?: any): Promise<ClientOAuth2Token> {
+	async refresh(opts?: ClientOAuth2Options): Promise<ClientOAuth2Token> {
 		const options = Object.assign({}, this.client.options, opts)
 
 		if (!this.refreshToken) {
