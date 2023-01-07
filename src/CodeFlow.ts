@@ -1,14 +1,8 @@
 import * as qs from 'querystring'
-import type { ClientOAuth2 } from '../ClientOAuth2'
-import type { ClientOAuth2Token } from '../ClientOAuth2Token'
-import { DEFAULT_HEADERS, DEFAULT_URL_BASE } from '../constants'
-import {
-	auth,
-	createUri,
-	expects,
-	getAuthError,
-	requestOptions,
-} from '../utils'
+import type { ClientOAuth2 } from './ClientOAuth2'
+import type { ClientOAuth2Token } from './ClientOAuth2Token'
+import { DEFAULT_HEADERS, DEFAULT_URL_BASE } from './constants'
+import { auth, createUri, expects, getAuthError, requestOptions } from './utils'
 
 /**
  * Support authorization code OAuth 2.0 grant.

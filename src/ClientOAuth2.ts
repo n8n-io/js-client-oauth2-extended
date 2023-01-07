@@ -2,13 +2,8 @@ import * as qs from 'querystring'
 import { fetch } from 'popsicle'
 import { getAuthError } from './utils'
 import { ClientOAuth2Token } from './ClientOAuth2Token'
-import {
-	CodeFlow,
-	CredentialsFlow,
-	JwtBearerFlow,
-	OwnerFlow,
-	TokenFlow,
-} from './flows'
+import { CodeFlow } from './CodeFlow'
+import { CredentialsFlow } from './CredentialsFlow'
 
 /**
  * Construct an object that can handle the multiple OAuth 2.0 flows.
@@ -18,22 +13,13 @@ export class ClientOAuth2 {
 
 	code: CodeFlow
 
-	token: TokenFlow
-
-	owner: OwnerFlow
-
 	credentials: CredentialsFlow
-
-	jwt: JwtBearerFlow
 
 	constructor(options: any) {
 		this.options = options
 
 		this.code = new CodeFlow(this)
-		this.token = new TokenFlow(this)
-		this.owner = new OwnerFlow(this)
 		this.credentials = new CredentialsFlow(this)
-		this.jwt = new JwtBearerFlow(this)
 	}
 
 	/**

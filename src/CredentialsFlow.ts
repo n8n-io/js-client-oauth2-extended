@@ -1,7 +1,7 @@
-import type { ClientOAuth2 } from '../ClientOAuth2'
-import type { ClientOAuth2Token } from '../ClientOAuth2Token'
-import { DEFAULT_HEADERS } from '../constants'
-import { auth, expects, requestOptions, sanitizeScope } from '../utils'
+import type { ClientOAuth2 } from './ClientOAuth2'
+import type { ClientOAuth2Token } from './ClientOAuth2Token'
+import { DEFAULT_HEADERS } from './constants'
+import { auth, expects, requestOptions, sanitizeScope } from './utils'
 
 /**
  * Support client credentials OAuth 2.0 grant.
