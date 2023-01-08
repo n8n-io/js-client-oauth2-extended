@@ -1,16 +1,16 @@
 import type {
 	ClientOAuth2,
 	ClientOAuth2Options,
-	RequestOptions,
+	RequestObject,
 } from './ClientOAuth2'
 import { auth, requestOptions } from './utils'
 import { DEFAULT_HEADERS } from './constants'
 
-interface TokenData {
+export interface TokenData extends Record<string, string> {
 	token_type?: string
 	access_token: string
 	refresh_token: string
-	expires_in: string | number | Date
+	expires_in: string
 	scope?: string
 }
 /**
@@ -23,7 +23,7 @@ export class ClientOAuth2Token {
 
 	readonly refreshToken: string
 
-	expires: Date
+	private expires: Date
 
 	constructor(private client: ClientOAuth2, readonly data: TokenData) {
 		this.tokenType = data.token_type && data.token_type.toLowerCase()
@@ -52,7 +52,7 @@ export class ClientOAuth2Token {
 	/**
 	 * Sign a standardized request object with user authentication information.
 	 */
-	sign(requestObject: RequestOptions): RequestOptions {
+	sign(requestObject: RequestObject): RequestObject {
 		if (!this.accessToken) {
 			throw new Error('Unable to sign without access token')
 		}
@@ -84,7 +84,7 @@ export class ClientOAuth2Token {
 	 * Refresh a user access token with the supplied token.
 	 */
 	async refresh(opts?: ClientOAuth2Options): Promise<ClientOAuth2Token> {
-		const options = Object.assign({}, this.client.options, opts)
+		const options = { ...this.client.options, ...opts }
 
 		if (!this.refreshToken) {
 			return Promise.reject(new Error('No refresh token'))
@@ -95,9 +95,10 @@ export class ClientOAuth2Token {
 				{
 					url: options.accessTokenUri,
 					method: 'POST',
-					headers: Object.assign({}, DEFAULT_HEADERS, {
+					headers: {
+						...DEFAULT_HEADERS,
 						Authorization: auth(options.clientId, options.clientSecret),
-					}),
+					},
 					body: {
 						refresh_token: this.refreshToken,
 						grant_type: 'refresh_token',
@@ -106,7 +107,7 @@ export class ClientOAuth2Token {
 				options
 			)
 		)
-		return this.client.createToken(Object.assign({}, this.data, data))
+		return this.client.createToken({ ...this.data, ...data })
 	}
 
 	/**

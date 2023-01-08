@@ -1,9 +1,11 @@
+import { Headers } from './ClientOAuth2'
+
 export const DEFAULT_URL_BASE = 'https://example.org/'
 
 /**
  * Default headers for executing OAuth 2.0 flows.
  */
-export const DEFAULT_HEADERS = {
+export const DEFAULT_HEADERS: Headers = {
 	Accept: 'application/json, application/x-www-form-urlencoded',
 	'Content-Type': 'application/x-www-form-urlencoded',
 }

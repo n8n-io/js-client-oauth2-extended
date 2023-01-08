@@ -1,5 +1,4 @@
-import qs from 'querystring'
-import type { ClientOAuth2Options } from './ClientOAuth2'
+import type { RequestObject } from './ClientOAuth2'
 import { ERROR_RESPONSES } from './constants'
 
 /**
@@ -56,46 +55,18 @@ export function auth(username: string, password: string): string {
 }
 
 /**
- * Create a request uri based on an options object and token type.
- */
-export function createUri(
-	options: ClientOAuth2Options,
-	tokenType: string
-): string {
-	// Check the required parameters are set.
-	expects(options, 'clientId', 'authorizationUri')
-
-	const query: any = {
-		client_id: options.clientId,
-		redirect_uri: options.redirectUri,
-		response_type: tokenType,
-		state: options.state,
-	}
-	if (options.scopes !== undefined) {
-		query.scope = sanitizeScope(options.scopes)
-	}
-
-	const sep = options.authorizationUri.includes('?') ? '&' : '?'
-	return (
-		options.authorizationUri +
-		sep +
-		qs.stringify(Object.assign(query, options.query))
-	)
-}
-
-/**
  * Merge request options from an options object.
  */
 export function requestOptions(
-	{ url, method, body, query, headers }: any,
+	{ url, method, body, query, headers }: RequestObject,
 	options: any
-) {
+): RequestObject {
 	const rOptions = {
 		url: url,
 		method: method,
-		body: Object.assign({}, body, options.body),
-		query: Object.assign({}, query, options.query),
-		headers: Object.assign({}, headers, options.headers),
+		body: { ...body, ...options.body },
+		query: { ...query, ...options.query },
+		headers: { ...headers, ...options.headers },
 	}
 	// if request authorization was overridden delete it from header
 	if (rOptions.headers.Authorization === '') {

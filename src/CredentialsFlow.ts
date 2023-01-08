@@ -3,6 +3,11 @@ import type { ClientOAuth2Token } from './ClientOAuth2Token'
 import { DEFAULT_HEADERS } from './constants'
 import { auth, expects, requestOptions, sanitizeScope } from './utils'
 
+interface CredentialsFlowBody {
+	grant_type: 'client_credentials'
+	scope?: string
+}
+
 /**
  * Support client credentials OAuth 2.0 grant.
  *
@@ -15,11 +20,11 @@ export class CredentialsFlow {
 	 * Request an access token using the client credentials.
 	 */
 	async getToken(opts?: ClientOAuth2Options): Promise<ClientOAuth2Token> {
-		const options = Object.assign({}, this.client.options, opts)
+		const options = { ...this.client.options, ...opts }
 
 		expects(options, 'clientId', 'clientSecret', 'accessTokenUri')
 
-		const body: any = {
+		const body: CredentialsFlowBody = {
 			grant_type: 'client_credentials',
 		}
 
@@ -32,10 +37,11 @@ export class CredentialsFlow {
 				{
 					url: options.accessTokenUri,
 					method: 'POST',
-					headers: Object.assign({}, DEFAULT_HEADERS, {
+					headers: {
+						...DEFAULT_HEADERS,
 						Authorization: auth(options.clientId, options.clientSecret),
-					}),
-					body: body,
+					},
+					body,
 				},
 				options
 			)

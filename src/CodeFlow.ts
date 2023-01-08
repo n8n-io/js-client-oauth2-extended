@@ -2,7 +2,20 @@ import * as qs from 'querystring'
 import type { ClientOAuth2, ClientOAuth2Options } from './ClientOAuth2'
 import type { ClientOAuth2Token } from './ClientOAuth2Token'
 import { DEFAULT_HEADERS, DEFAULT_URL_BASE } from './constants'
-import { auth, createUri, expects, getAuthError, requestOptions } from './utils'
+import {
+	auth,
+	expects,
+	getAuthError,
+	requestOptions,
+	sanitizeScope,
+} from './utils'
+
+interface CodeFlowBody {
+	code: string | string[]
+	grant_type: 'authorization_code'
+	redirect_uri?: string
+	client_id?: string
+}
 
 /**
  * Support authorization code OAuth 2.0 grant.
@@ -16,8 +29,27 @@ export class CodeFlow {
 	 * Generate the uri for doing the first redirect.
 	 */
 	getUri(opts?: ClientOAuth2Options): string {
-		const options = Object.assign({}, this.client.options, opts)
-		return createUri(options, 'code')
+		const options = { ...this.client.options, ...opts }
+
+		// Check the required parameters are set.
+		expects(options, 'clientId', 'authorizationUri')
+
+		const query: any = {
+			client_id: options.clientId,
+			redirect_uri: options.redirectUri,
+			response_type: 'code',
+			state: options.state,
+		}
+		if (options.scopes !== undefined) {
+			query.scope = sanitizeScope(options.scopes)
+		}
+
+		const sep = options.authorizationUri.includes('?') ? '&' : '?'
+		return (
+			options.authorizationUri +
+			sep +
+			qs.stringify({ ...query, ...options.query })
+		)
 	}
 
 	/**
@@ -28,12 +60,11 @@ export class CodeFlow {
 		uri?: string | URL,
 		opts?: ClientOAuth2Options
 	): Promise<ClientOAuth2Token> {
-		const options = Object.assign({}, this.client.options, opts)
+		const options = { ...this.client.options, ...opts }
 
 		expects(options, 'clientId', 'accessTokenUri')
 
 		const url = uri instanceof URL ? uri : new URL(uri, DEFAULT_URL_BASE)
-
 		if (
 			typeof options.redirectUri === 'string' &&
 			typeof url.pathname === 'string' &&
@@ -72,8 +103,8 @@ export class CodeFlow {
 			)
 		}
 
-		const headers: any = Object.assign({}, DEFAULT_HEADERS)
-		const body: any = {
+		const headers = { ...DEFAULT_HEADERS }
+		const body: CodeFlowBody = {
 			code: data.code,
 			grant_type: 'authorization_code',
 			redirect_uri: options.redirectUri,
@@ -93,8 +124,8 @@ export class CodeFlow {
 				{
 					url: options.accessTokenUri,
 					method: 'POST',
-					headers: headers,
-					body: body,
+					headers,
+					body,
 				},
 				options
 			)

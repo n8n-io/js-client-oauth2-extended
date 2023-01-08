@@ -1,16 +1,19 @@
 import * as qs from 'querystring'
 import { fetch } from 'popsicle'
 import { getAuthError } from './utils'
-import { ClientOAuth2Token } from './ClientOAuth2Token'
+import { ClientOAuth2Token, TokenData } from './ClientOAuth2Token'
 import { CodeFlow } from './CodeFlow'
 import { CredentialsFlow } from './CredentialsFlow'
 
-export interface RequestOptions {
+export type Headers = Record<string, string | string[]>
+export type Query = Record<string, string | string[]>
+
+export interface RequestObject {
 	url: string
-	method: string
+	method: 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT'
 	body?: Record<string, any>
-	query?: Record<string, string | string[]>
-	headers?: Record<string, string | string[]>
+	query?: Query
+	headers?: Headers
 }
 
 export interface ClientOAuth2Options {
@@ -23,7 +26,8 @@ export interface ClientOAuth2Options {
 	authorizationGrants?: string[]
 	state?: string
 	body?: Record<string, any>
-	query?: Record<string, string | string[]>
+	query?: Query
+	headers?: Headers
 }
 
 /**
@@ -46,17 +50,14 @@ export class ClientOAuth2 {
 		access?: string,
 		refresh?: string,
 		type?: string,
-		data?: any
+		data?: TokenData
 	): ClientOAuth2Token {
-		const options = Object.assign(
-			{},
-			data,
-			typeof access === 'string' ? { access_token: access } : access,
-			typeof refresh === 'string' ? { refresh_token: refresh } : refresh,
-			typeof type === 'string' ? { token_type: type } : type
-		)
-
-		return new ClientOAuth2Token(this, options)
+		return new ClientOAuth2Token(this, {
+			...data,
+			...(typeof access === 'string' ? { access_token: access } : access),
+			...(typeof refresh === 'string' ? { refresh_token: refresh } : refresh),
+			...(typeof type === 'string' ? { token_type: type } : type),
+		})
 	}
 
 	/**
@@ -74,7 +75,7 @@ export class ClientOAuth2 {
 	 * Using the built-in request method, we'll automatically attempt to parse
 	 * the response.
 	 */
-	async request(options: RequestOptions): Promise<any> {
+	async request(options: RequestObject): Promise<any> {
 		let url = options.url
 		const query = qs.stringify(options.query)
 
