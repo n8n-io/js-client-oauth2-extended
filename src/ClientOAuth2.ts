@@ -1,11 +1,11 @@
 import * as qs from 'querystring'
-import { fetch } from 'popsicle'
+import axios, { RawAxiosRequestHeaders } from 'axios'
 import { getAuthError } from './utils'
 import { ClientOAuth2Token, TokenData } from './ClientOAuth2Token'
 import { CodeFlow } from './CodeFlow'
 import { CredentialsFlow } from './CredentialsFlow'
 
-export type Headers = Record<string, string | string[]>
+export type Headers = RawAxiosRequestHeaders
 export type Query = Record<string, string | string[]>
 
 export interface RequestObject {
@@ -83,14 +83,15 @@ export class ClientOAuth2 {
 			url += (url.indexOf('?') === -1 ? '?' : '&') + query
 		}
 
-		const response = await fetch(url, {
-			body: qs.stringify(options.body),
+		const response = await axios.request({
+			url,
 			method: options.method,
+			data: qs.stringify(options.body),
 			headers: options.headers,
+			transformResponse: (res) => res,
 		})
-		const responseBody = await response.text()
 
-		const body = this.parseResponseBody(responseBody)
+		const body = this.parseResponseBody(response.data)
 		const authErr = getAuthError(body)
 
 		if (authErr) {
@@ -100,7 +101,7 @@ export class ClientOAuth2 {
 		if (response.status < 200 || response.status >= 399) {
 			const statusErr = new Error('HTTP status ' + response.status) as any
 			statusErr.status = response.status
-			statusErr.body = responseBody
+			statusErr.body = response.data
 			statusErr.code = 'ESTATUS'
 			return Promise.reject(statusErr)
 		}
